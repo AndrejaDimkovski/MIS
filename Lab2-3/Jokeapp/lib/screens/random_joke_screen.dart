@@ -19,18 +19,22 @@ class _RandomJokeScreenState extends State<RandomJokeScreen> {
   }
 
   void fetchRandomJoke() async {
-    ApiService.getRandomJoke().then((response) {
-      setState(() {
-        randomJoke = json.decode(response.body);
+    try {
+      ApiService.getRandomJoke().then((response) {
+        setState(() {
+          randomJoke = json.decode(response.body);
+        });
       });
-    });
+    } catch (e) {
+      print("Error fetching joke: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Random Joke'),
+        title: const Text('Шега на денот (Random joke)'),
         backgroundColor: Colors.deepOrangeAccent,
       ),
       body: randomJoke == null
@@ -48,7 +52,8 @@ class _RandomJokeScreenState extends State<RandomJokeScreen> {
             Card(
               elevation: 6,
               margin: const EdgeInsets.all(16.0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -57,14 +62,18 @@ class _RandomJokeScreenState extends State<RandomJokeScreen> {
                     Text(
                       randomJoke!['setup'],
                       style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
                     Text(
                       randomJoke!['punchline'],
                       style: const TextStyle(
-                          fontSize: 20, fontStyle: FontStyle.italic, color: Colors.black87),
+                          fontSize: 20,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.black87),
                       textAlign: TextAlign.center,
                     ),
                   ],

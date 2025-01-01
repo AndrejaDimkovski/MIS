@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:jokeapp/providers/favoritejokeprovider.dart';
+import 'package:provider/provider.dart';
+
 import '../services/api_service.dart';
+
 
 class JokesScreen extends StatefulWidget {
   const JokesScreen({super.key});
@@ -30,10 +34,23 @@ class _JokesScreenState extends State<JokesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final pokemonProvider = Provider.of<FavoriteJokeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(type.toUpperCase()),
         backgroundColor: Colors.deepOrangeAccent,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                '/favorites',
+              );
+            },
+            icon: const Icon(Icons.favorite, color: Colors.white, size: 24),
+          ),
+        ],
       ),
       body: jokes.isEmpty
           ? const Center(child: CircularProgressIndicator())
@@ -48,6 +65,8 @@ class _JokesScreenState extends State<JokesScreen> {
         child: ListView.builder(
           itemCount: jokes.length,
           itemBuilder: (context, index) {
+            final joke = jokes[index];
+
             return Card(
               elevation: 4,
               margin: const EdgeInsets.all(8.0),
@@ -55,12 +74,27 @@ class _JokesScreenState extends State<JokesScreen> {
               child: ListTile(
                 leading: const Icon(Icons.sentiment_satisfied_alt, color: Colors.orange, size: 30),
                 title: Text(
-                  jokes[index]['setup'],
+                  joke['setup'],
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
                 subtitle: Text(
-                  jokes[index]['punchline'],
+                  joke['punchline'],
                   style: const TextStyle(fontSize: 16, color: Colors.black54),
+                ),
+                trailing: IconButton(
+                  icon: Icon(
+                    pokemonProvider.isFavorite(joke)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: Colors.red,
+                  ),
+                  onPressed: () {
+                    if (pokemonProvider.isFavorite(joke)) {
+                      pokemonProvider.removeFavorite(joke);  // Бришење од омилени
+                    } else {
+                      pokemonProvider.addFavorite(joke);  // Додавање во омилени
+                    }
+                  },
                 ),
               ),
             );
